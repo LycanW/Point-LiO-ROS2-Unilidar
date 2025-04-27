@@ -1,6 +1,7 @@
 /install/
 /log/
 /build/
-/.vscode/
 /.idea/
 /src/point_lio/PCD/
+/.vscode/
+.gitignore
