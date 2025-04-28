@@ -610,7 +610,7 @@ void publish_odometry(const rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPt
                       std::shared_ptr<tf2_ros::TransformBroadcaster> &tf_br) {
     odomAftMapped.header.frame_id = "odom";
     odomAftMapped.child_frame_id = "imu_link";
-    if (publish_odometry_without_downsample) {
+    if (publish_odometry_without_downsample_) {
         odomAftMapped.header.stamp = get_ros_time(time_current);
     } else {
         odomAftMapped.header.stamp = get_ros_time(lidar_end_time);
@@ -717,7 +717,7 @@ int main(int argc, char **argv) {
     // if (p_pre->lidar_type == AVIA) {
     //     sub_pcl_livox_ = nh->create_subscription<livox_ros_driver2::msg::CustomMsg>(lid_topic, 20, livox_pcl_cbk);
     // } else {
-        sub_pcl_pc_ = nh->create_subscription<sensor_msgs::msg::PointCloud2>(lid_topic, rclcpp::SensorDataQoS(),
+    sub_pcl_pc_ = nh->create_subscription<sensor_msgs::msg::PointCloud2>(lid_topic, rclcpp::SensorDataQoS(),
                                                                              standard_pcl_cbk);
     // }
     auto sub_imu = nh->create_subscription<sensor_msgs::msg::Imu>(imu_topic, 200000, imu_cbk);
@@ -989,7 +989,7 @@ int main(int argc, char **argv) {
 
                     solve_start = omp_get_wtime();
 
-                    if (publish_odometry_without_downsample) {
+                    if (publish_odometry_without_downsample_) {
                         /******* Publish odometry *******/
 
                         publish_odometry(pubOdomAftMapped, tf_broadcaster);
@@ -1142,7 +1142,7 @@ int main(int argc, char **argv) {
                     //         imu_prop_cov = false;
                     //     }
                     // }
-                    if (publish_odometry_without_downsample) {
+                    if (publish_odometry_without_downsample_) {
                         /******* Publish odometry *******/
 
                         publish_odometry(pubOdomAftMapped, tf_broadcaster);
@@ -1170,7 +1170,7 @@ int main(int argc, char **argv) {
             }
 
             /******* Publish odometry downsample *******/
-            if (!publish_odometry_without_downsample) {
+            if (!publish_odometry_without_downsample_) {
                 publish_odometry(pubOdomAftMapped, tf_broadcaster);
             }
 
@@ -1203,7 +1203,7 @@ int main(int argc, char **argv) {
                 printf("[ mapping ]: time: IMU + Map + Input Downsample: %0.6f ave match: %0.6f ave solve: %0.6f  ave ICP: %0.6f  map incre: %0.6f ave total: %0.6f icp: %0.6f propogate: %0.6f \n",
                        t1 - t0, aver_time_match, aver_time_solve, t3 - t1, t5 - t3, aver_time_consu, aver_time_icp,
                        aver_time_propag);
-                if (!publish_odometry_without_downsample) {
+                if (!publish_odometry_without_downsample_) {
                     if (!use_imu_as_input) {
                         state_out = kf_output.x_;
                         euler_cur = SO3ToEuler(state_out.rot);
